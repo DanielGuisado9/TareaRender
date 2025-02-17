@@ -10,7 +10,7 @@ const tareasMockeadas = [
 ];
 
 // Ruta para obtener las tareas mockeadas
-router.get("/mock", (req, res) => {
+router.get("/", (req, res) => {
   res.json(tareasMockeadas);
 });
 
