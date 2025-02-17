@@ -9,11 +9,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Ruta de bienvenida para verificar el despliegue
-app.get("/", (req, res) => {
-  res.send("API de gestión de tareas funcionando correctamente");
-});
-
 // Almacén temporal de tareas (en memoria)
 let tareas = [];
 
