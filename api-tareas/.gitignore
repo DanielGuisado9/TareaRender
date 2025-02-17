@@ -1,0 +1,9 @@
+# Ignorar variables de entorno
+.env
+
+# Ignorar dependencias y archivos innecesarios
+node_modules/
+package-lock.json
+
+# Ignorar logs y archivos del sistema
+npm-debug.log
