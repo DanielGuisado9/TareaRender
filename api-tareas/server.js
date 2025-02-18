@@ -1,24 +1,40 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const tareasRoutes = require("./routes/tareas.routes"); // Importar las rutas de tareas
+const Tarea = require("../models/tarea.model");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// Obtener todas las tareas desde MongoDB
+exports.obtenerTareas = async (req, res) => {
+  try {
+    const tareas = await Tarea.find();
+    res.json(tareas);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener las tareas" });
+  }
+};
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Crear una nueva tarea en MongoDB
+exports.crearTarea = async (req, res) => {
+  try {
+    const { titulo, descripcion } = req.body;
+    if (!titulo || !descripcion) {
+      return res.status(400).json({ error: "El título y la descripción son obligatorios" });
+    }
+    const nuevaTarea = new Tarea({ titulo, descripcion });
+    await nuevaTarea.save();
+    res.status(201).json(nuevaTarea);
+  } catch (error) {
+    res.status(500).json({ error: "Error al crear la tarea" });
+  }
+};
 
-// Ruta de bienvenida para verificar el despliegue
-app.get("/", (req, res) => {
-  res.send("API de gestión de tareas funcionando correctamente con datos mockeados");
-});
-
-// Usar las rutas definidas en `tareas.routes.js`
-app.use("/tareas", tareasRoutes);
-
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-});
+// Eliminar una tarea por ID en MongoDB
+exports.eliminarTarea = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tareaEliminada = await Tarea.findByIdAndDelete(id);
+    if (!tareaEliminada) {
+      return res.status(404).json({ error: "Tarea no encontrada" });
+    }
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: "Error al eliminar la tarea" });
+  }
+};
