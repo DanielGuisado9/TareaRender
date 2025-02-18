@@ -1,40 +1,50 @@
-const Tarea = require("../models/tarea.model");
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import path from "path"; // ✅ Importado correctamente
+import { fileURLToPath } from "url";
+import tareasRoutes from "./routes/tareas.routes.js";
 
-// Obtener todas las tareas desde MongoDB
-exports.obtenerTareas = async (req, res) => {
-  try {
-    const tareas = await Tarea.find();
-    res.json(tareas);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener las tareas" });
-  }
-};
+// Convertir __dirname para ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// Crear una nueva tarea en MongoDB
-exports.crearTarea = async (req, res) => {
-  try {
-    const { titulo, descripcion } = req.body;
-    if (!titulo || !descripcion) {
-      return res.status(400).json({ error: "El título y la descripción son obligatorios" });
-    }
-    const nuevaTarea = new Tarea({ titulo, descripcion });
-    await nuevaTarea.save();
-    res.status(201).json(nuevaTarea);
-  } catch (error) {
-    res.status(500).json({ error: "Error al crear la tarea" });
-  }
-};
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Eliminar una tarea por ID en MongoDB
-exports.eliminarTarea = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const tareaEliminada = await Tarea.findByIdAndDelete(id);
-    if (!tareaEliminada) {
-      return res.status(404).json({ error: "Tarea no encontrada" });
-    }
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: "Error al eliminar la tarea" });
-  }
-};
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Verificar la ruta donde se busca el modelo
+console.log("Intentando cargar el modelo desde:", path.resolve(__dirname, "models/tarea.model.js"));
+
+// Conectar a MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(async () => {
+    console.log("✅ Conectado a MongoDB Atlas");
+  
+    // Verificar si la base de datos tiene datos
+    const tareas = await mongoose.connection.db.collection("tareas").find().toArray();
+    console.log("Tareas encontradas en la base de datos:", tareas);
+
+    if (tareas.length === 0) {
+        console.warn("⚠️ La base de datos está vacía, inserta datos manualmente.");
+      }
+  })
+  .catch((error) => {
+    console.error("❌ Error conectando a MongoDB:", error);
+    process.exit(1);
+  });
+  
+
+// Usar rutas de tareas
+app.use("/tareas", tareasRoutes);
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+});

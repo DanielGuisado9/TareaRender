@@ -1,10 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const TareaSchema = new mongoose.Schema({
   titulo: { type: String, required: true },
   descripcion: { type: String, required: true },
 }, {
-  timestamps: true // Agrega `createdAt` y `updatedAt`
+  collection: "tareas",
+  timestamps: true
 });
 
-module.exports = mongoose.model("Tarea", TareaSchema);
+export default mongoose.model("Tarea", TareaSchema);

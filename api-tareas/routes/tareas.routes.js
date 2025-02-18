@@ -1,22 +1,18 @@
-const express = require("express");
-const router = express.Router();
-const tareasController = require("../controllers/tareas.controller");
+import express from "express";
+import tareasController from "../controllers/tareas.controller.js";
 
-// Datos mockeados de tareas
-const tareasMockeadas = [
-  { id: 1, titulo: "Hacer la compra", descripcion: "Comprar leche, pan y huevos" },
-  { id: 2, titulo: "Estudiar Express", descripcion: "Revisar la documentación oficial de Express.js" },
-  { id: 3, titulo: "Ir al gimnasio", descripcion: "Entrenar una hora de cardio y pesas" }
-];
+const router = express.Router(); // ✅ Se define `router`
 
-// Ruta para obtener las tareas mockeadas
-router.get("/", (req, res) => {
-  res.json(tareasMockeadas);
-});
+// Verificar si el controlador se está importando correctamente
+console.log("Tareas Controller:", tareasController);
 
-// Rutas normales (sin MongoDB aún)
+// Obtener todas las tareas desde MongoDB
 router.get("/", tareasController.obtenerTareas);
+
+// Crear una nueva tarea en MongoDB
 router.post("/", tareasController.crearTarea);
+
+// Eliminar una tarea por ID en MongoDB
 router.delete("/:id", tareasController.eliminarTarea);
 
-module.exports = router;
+export default router;
