@@ -7,12 +7,14 @@ const router = express.Router(); // ✅ Se define `router`
 console.log("Tareas Controller:", tareasController);
 
 // Obtener todas las tareas desde MongoDB
-router.get("/", tareasController.obtenerTareas);
+router.get("/ObtenerTarea", tareasController.obtenerTareas);
 
 // Crear una nueva tarea en MongoDB
-router.post("/", tareasController.crearTarea);
+router.post("/CrearTarea", tareasController.crearTarea);
 
 // Eliminar una tarea por ID en MongoDB
-router.delete("/:id", tareasController.eliminarTarea);
+router.delete("/Delete/:id", tareasController.eliminarTarea);
+
+
 
 export default router;
